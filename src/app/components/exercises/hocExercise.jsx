@@ -1,5 +1,46 @@
 import React from "react";
 import CollapseWrapper from "../common/collapse";
+import PropTypes from "prop-types";
+import CardWrapper from "../../../../../hooks-after-reusable-form/src/app/components/common/Card";
+
+const SimpleComponent = ({ onLogin, onLogOut, isAuth }) => {
+    return isAuth ? (
+        <button className="btn btn-danger" onClick={onLogOut}>
+            Выйти
+        </button>
+    ) : (
+        <button className="btn btn-primary" onClick={onLogin}>
+            Войти
+        </button>
+    );
+};
+SimpleComponent.propTypes = {
+    isAuth: PropTypes.bool,
+    onLogin: PropTypes.func,
+    onLogOut: PropTypes.func
+};
+
+const withFunc = (Component) => (props) => {
+    const isAuth = !!localStorage.getItem("auth");
+    const handleLogin = () => {
+        localStorage.setItem("auth", "token");
+    };
+    const handleLogout = () => {
+        localStorage.removeItem("auth");
+    };
+
+    return (
+        <CardWrapper>
+            <Component
+                onLogOut={handleLogout}
+                onLogin={handleLogin}
+                isAuth={isAuth}
+                {...props}
+            />
+        </CardWrapper>
+    );
+};
+const ComponentWithHoc = withFunc(SimpleComponent);
 
 const HocExercise = () => {
     return (
@@ -76,6 +117,8 @@ const HocExercise = () => {
                 <code>SimpleComponent</code> обновится после перезагрузки
                 страницы
             </p>
+            <hr />
+            <ComponentWithHoc />
         </CollapseWrapper>
     );
 };
